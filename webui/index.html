@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clean — Explorer &amp; Cleaner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/unified.css" />
+  </head>
+  <body>
+    <div class="app-shell mode-explorer" id="appShell">
+      <header class="titlebar">
+        <div class="titlebar-left">
+          <button type="button" class="icon-button" id="btnSidebar" title="Toggle sidebar" aria-label="Toggle sidebar">☰</button>
+          <div class="logo" aria-hidden="true"><span class="logo-mark">◈</span><span class="logo-text">Clean</span></div>
+          <nav class="mode-tabs" role="tablist" aria-label="Mode">
+            <button type="button" class="mode-tab active" id="tabExplorer" data-mode="explorer" role="tab" aria-selected="true">Explorer</button>
+            <button type="button" class="mode-tab" id="tabCleaner" data-mode="cleaner" role="tab" aria-selected="false">Cleaner</button>
+          </nav>
+        </div>
+        <div class="titlebar-right">
+          <span class="titlebar-hint" id="titlebarHint">File Explorer</span>
+        </div>
+      </header>
+
+      <div class="app-body">
+        <div class="sidebar-overlay hidden" id="sidebarOverlay"></div>
+
+        <aside class="sidebar" id="sidebar">
+          <section class="sidebar-section">
+            <div class="sidebar-label">Quick Access</div>
+            <button type="button" class="nav-item" data-quick="home" title="Home"><span class="ni-icon">🏠</span><span class="ni-label">Home</span></button>
+            <button type="button" class="nav-item" data-quick="downloads" title="Downloads"><span class="ni-icon">📥</span><span class="ni-label">Downloads</span></button>
+            <button type="button" class="nav-item" data-quick="documents" title="Documents"><span class="ni-icon">📄</span><span class="ni-label">Documents</span></button>
+            <button type="button" class="nav-item" data-quick="pictures" title="Pictures"><span class="ni-icon">🖼️</span><span class="ni-label">Pictures</span></button>
+            <button type="button" class="nav-item" data-quick="videos" title="Videos"><span class="ni-icon">🎬</span><span class="ni-label">Videos</span></button>
+          </section>
+
+          <section class="sidebar-section">
+            <div class="sidebar-label">Drives</div>
+            <div class="drive-list" id="driveList">
+              <div class="drive-item skeleton" style="height: 54px"></div>
+              <div class="drive-item skeleton" style="height: 54px"></div>
+            </div>
+          </section>
+
+          <section class="sidebar-section">
+            <div class="sidebar-label">Cleaner</div>
+            <button type="button" class="btn btn-primary btn-block" id="btnScanCSidebar" title="Scan C: Drive">
+              <span class="btn-label">Scan C: Drive</span><span class="btn-icon-only" aria-hidden="true">🧹</span>
+            </button>
+            <label class="check-row" title="Run the C: scan automatically when Cleaner mode opens">
+              <input type="checkbox" id="chkAutoScan" /><span class="ni-label">Auto-scan on load</span>
+            </label>
+            <label class="check-row" title="Show a notification when the scan finishes">
+              <input type="checkbox" id="chkNotify" /><span class="ni-label">Notify on completion</span>
+            </label>
+          </section>
+        </aside>
+
+        <main class="main">
+          <div class="toolbar">
+            <button type="button" class="icon-button" id="btnBack" title="Back" aria-label="Back" disabled>←</button>
+            <button type="button" class="icon-button" id="btnForward" title="Forward" aria-label="Forward" disabled>→</button>
+
+            <div class="path-wrap explorer-control">
+              <div class="path-bar" id="pathBar" title="Click to edit path">
+                <nav class="breadcrumb" id="breadcrumb" aria-label="Current path"></nav>
+              </div>
+              <input type="text" class="path-input hidden" id="pathInput" aria-label="Folder path" spellcheck="false" />
+            </div>
+
+            <div class="spinner hidden" id="toolbarSpinner" role="status" aria-label="Loading"></div>
+            <div class="toolbar-spacer"></div>
+
+            <input type="search" class="field search-input explorer-control" id="searchInput" placeholder="Filter by name…" aria-label="Filter by name" />
+            <select class="field select-input explorer-control" id="sortSelect" aria-label="Sort by">
+              <option value="size">Sort: Size</option>
+              <option value="name">Sort: Name</option>
+            </select>
+            <label class="check-row toolbar-check explorer-control" title="Only show folders of at least 1 MB">
+              <input type="checkbox" id="chkLargeOnly" /><span>≥ 1 MB</span>
+            </label>
+            <label class="check-row toolbar-check explorer-control" title="Hide protected system folders">
+              <input type="checkbox" id="chkHideSystem" /><span>Hide system</span>
+            </label>
+
+            <button type="button" class="btn btn-primary cleaner-control hidden" id="btnScanC">Scan C: Drive</button>
+            <button type="button" class="btn cleaner-control hidden" id="btnRescan" disabled>Re-scan</button>
+          </div>
+          <div class="content" id="content">
+            <section class="view" id="explorerView" aria-label="File explorer">
+              <div class="table-wrap" id="tableWrap">
+                <table id="resultsTable">
+                  <thead>
+                    <tr>
+                      <th class="col-check"><input type="checkbox" id="chkSelectAll" aria-label="Select all" /></th>
+                      <th data-sort="name">Name</th>
+                      <th data-sort="size">Size</th>
+                      <th data-sort="files">Files</th>
+                      <th data-sort="path">Path</th>
+                    </tr>
+                  </thead>
+                  <tbody id="resultsBody"></tbody>
+                </table>
+              </div>
+              <div class="empty-state hidden" id="explorerEmpty">
+                <div class="empty-state-icon" aria-hidden="true">📂</div>
+                <div class="empty-state-title" id="explorerEmptyTitle">No folders found</div>
+                <div class="empty-state-desc" id="explorerEmptyDesc">This folder may be empty or access was denied.</div>
+              </div>
+            </section>
+
+            <section class="view hidden" id="cleanerView" aria-label="Bloat cleaner">
+              <div class="summary hidden" id="summary">
+                <div class="summary-card delete">
+                  <div class="summary-value" id="sumDelete">0 B</div>
+                  <div class="summary-label">Safe to Delete</div>
+                </div>
+                <div class="summary-card move">
+                  <div class="summary-value" id="sumMove">0 B</div>
+                  <div class="summary-label">Move to D:</div>
+                </div>
+                <div class="summary-card decide">
+                  <div class="summary-value" id="sumDecide">0 B</div>
+                  <div class="summary-label">Needs Decision</div>
+                </div>
+              </div>
+
+              <div class="category-grid hidden" id="categoryGrid">
+                <div class="card" id="catDelete">
+                  <div class="category-header">
+                    <span class="category-icon" aria-hidden="true">🗑️</span>
+                    <span class="category-title">Safe to Delete (Cache)</span>
+                    <span class="category-count" id="countDelete">0 items</span>
+                  </div>
+                  <div class="list" id="listDelete"></div>
+                </div>
+                <div class="card" id="catMove">
+                  <div class="category-header">
+                    <span class="category-icon" aria-hidden="true">📦</span>
+                    <span class="category-title">Move to D:</span>
+                    <span class="category-count" id="countMove">0 items</span>
+                  </div>
+                  <div class="list" id="listMove"></div>
+                </div>
+                <div class="card" id="catDecide">
+                  <div class="category-header">
+                    <span class="category-icon" aria-hidden="true">❔</span>
+                    <span class="category-title">Needs Decision</span>
+                    <span class="category-count" id="countDecide">0 items</span>
+                  </div>
+                  <div class="list" id="listDecide"></div>
+                </div>
+              </div>
+
+              <div class="empty-state hidden" id="cleanerIdle">
+                <div class="empty-state-icon" aria-hidden="true">🧹</div>
+                <div class="empty-state-title">No scan yet</div>
+                <div class="empty-state-desc">Run a scan to analyse C: drive bloat — caches, movable apps and items that need a decision.</div>
+                <button type="button" class="btn btn-primary" id="btnScanIdle">Scan C: Drive</button>
+              </div>
+            </section>
+          </div>
+
+          <footer class="status-bar" id="statusBar">
+            <span class="status-text" id="statusText">Ready</span>
+            <div class="progress-track" id="progressTrack" aria-hidden="true"><div class="progress-fill" id="progressBar"></div></div>
+            <span class="status-spacer"></span>
+            <span class="selection-info hidden" id="selectionInfo">0 items selected</span>
+            <button type="button" class="btn btn-danger btn-sm hidden" id="btnDeleteSelected">Delete Selected</button>
+            <button type="button" class="btn btn-sm hidden" id="btnClearSelection">Clear</button>
+          </footer>
+        </main>
+      </div>
+    </div>
+
+    <div class="context-menu hidden" id="contextMenu" role="menu">
+      <button type="button" data-act="delete" class="danger" role="menuitem">Delete</button>
+      <button type="button" data-act="copy" role="menuitem">Copy Path</button>
+      <button type="button" data-act="properties" role="menuitem">Properties</button>
+    </div>
+    <div class="modal-overlay" id="fileModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal">
+        <div class="modal-header">
+          <button type="button" class="modal-nav hidden" id="modalBack" title="Back" aria-label="Back">←</button>
+          <div class="modal-heading">
+            <div class="modal-title" id="modalTitle">Folder Contents</div>
+            <div class="modal-path" id="modalPath"></div>
+          </div>
+          <button type="button" class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body" id="modalContent"></div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <div class="modal-title" id="confirmTitle">Confirm</div>
+          <button type="button" class="modal-close" id="confirmX" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="confirm-warning hidden" id="confirmWarning"></div>
+          <div class="confirm-message" id="confirmMessage"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="confirmCancel">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmOk">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-container" id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="/js/unified.js"></script>
+  </body>
+</html>
+
+

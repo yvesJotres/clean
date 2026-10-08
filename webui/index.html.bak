@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Folder Size Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="explorer-shell">
+      <div class="titlebar">
+        <div class="titlebar-left">
+          <button type="button" class="header-button">New</button>
+          <button type="button" class="icon-button" aria-label="Open">⌂</button>
+          <button type="button" class="icon-button" aria-label="Back">←</button>
+          <button type="button" class="icon-button" aria-label="Forward">→</button>
+        </div>
+
+        <div class="titlebar-right">
+          <button id="btnScan" type="button" class="header-button primary">Scan folder</button>
+        </div>
+      </div>
+
+      <div class="explorer-layout">
+        <aside class="sidebar-panel">
+          <div class="sidebar-block">
+            <button class="nav-item active" type="button">Home</button>
+            <button class="nav-item" type="button">Gallery</button>
+            <button class="nav-item" type="button">Yes - Personal</button>
+            <button class="nav-item" type="button">Desktop</button>
+            <button class="nav-item" type="button">Documents</button>
+            <button class="nav-item" type="button">Pictures</button>
+            <button class="nav-item" type="button">Videos</button>
+          </div>
+
+          <div class="sidebar-block divider">
+            <button class="nav-item" type="button">Downloads</button>
+            <button class="nav-item" type="button">Documents</button>
+            <button class="nav-item" type="button">Videos</button>
+          </div>
+
+          <div class="sidebar-block divider drive-block">
+            <div class="sidebar-label">Drive selection</div>
+            <div id="driveList" class="drive-list"></div>
+          </div>
+        </aside>
+
+        <main class="content-panel">
+          <div class="content-toolbar">
+            <div class="toolbar-row top-row">
+              <div class="address-box">
+                <input id="folderInput" type="text" placeholder="Select or type a folder path" />
+              </div>
+              <button id="btnBrowse" type="button" class="toolbar-button">Browse</button>
+            </div>
+
+            <div class="toolbar-row bottom-row">
+              <input id="searchInput" type="search" placeholder="Search folders" />
+              <label class="toggle-row">
+                <input id="filterLargeOnly" type="checkbox" />
+                <span>Only folders >= 1 MB</span>
+              </label>
+              <select id="sortSelect" aria-label="Sort results">
+                <option value="size">Size</option>
+                <option value="name">Name</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="status-strip">
+            <span id="statusText">Ready</span>
+            <span id="progressText">0%</span>
+          </div>
+
+          <div class="scan-progress">
+            <div class="progress-track">
+              <div id="progressBar" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="results-panel">
+            <div class="results-header">
+              <div class="results-actions">
+                <button id="btnOpen" type="button" class="toolbar-button secondary" disabled>Open</button>
+                <button id="btnDelete" type="button" class="toolbar-button danger" disabled>Delete</button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table id="resultsTable">
+                <thead>
+                  <tr>
+                    <th data-sort="name">Name</th>
+                    <th data-sort="size">Size</th>
+                    <th data-sort="files">Files</th>
+                    <th data-sort="path">Path</th>
+                    <th data-sort="junk">Junk</th>
+                  </tr>
+                </thead>
+                <tbody id="resultsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <a href="/" id="reloadUiLink">Refresh UI</a>
+    </div>
+
+    <script src="/js/app.js"></script>
+  </body>
+</html>

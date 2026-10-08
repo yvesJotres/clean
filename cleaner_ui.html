@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Cleaner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-marketing: #08090a;
+      --bg-panel: #0f1011;
+      --bg-level3: #191a1b;
+      --text-primary: #f7f8f8;
+      --text-secondary: #d0d6e0;
+      --brand-indigo: #5e6ad2;
+      --accent-violet: #7170ff;
+      --border-subtle: rgba(255,255,255,0.05);
+      --border-standard: rgba(255,255,255,0.08);
+    }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg-marketing);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 40px;
+      line-height: 1.5;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { font-size: 48px; letter-spacing: -1.056px; font-weight: 510; }
+    .card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-standard);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .btn {
+      background: var(--brand-indigo);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 510;
+      display: inline-block;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover { background: var(--accent-violet); }
+    .stat { color: var(--text-secondary); font-size: 14px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>System Cleaner</h1>
+    <p class="stat">Manage and optimize your storage.</p>
+    
+    <div class="card">
+      <h3>C: Drive Analysis</h3>
+      <p class="stat">Total identified bloat: 27.1 GB</p>
+      <button class="btn" onclick="runScan()">Scan C: Drive</button>
+    </div>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    async function runScan() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '<p>Scanning...</p>';
+      
+      // In a real app, this would call a backend endpoint
+      // Mocking the data for the UI
+      const data = {
+        cache: [
+          { name: 'NVIDIA Corporation', size: '8.4 GB', desc: 'Driver cache' },
+          { name: 'Intel Package Cache', size: '448 MB', desc: 'Installer leftovers' }
+        ],
+        move: [
+          { name: 'Visual Studio', size: '8.1 GB', desc: 'Move to D:' }
+        ]
+      };
+
+      resultsDiv.innerHTML = '<h2>Scan Results</h2>' +
+        data.cache.map(i => `<div class="card"><strong>${i.name}</strong><br>${i.size} - ${i.desc}</div>`).join('') +
+        data.move.map(i => `<div class="card"><strong>${i.name}</strong><br>${i.size} - ${i.desc}</div>`).join('');
+    }
+  </script>
+</body>
+</html>
